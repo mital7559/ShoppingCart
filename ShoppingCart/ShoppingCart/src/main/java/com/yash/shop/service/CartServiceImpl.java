@@ -98,6 +98,7 @@ public class CartServiceImpl implements CartService{
 		System.out.println("--Cart List--"+cartList.toString());
 		List<CartDTO> dtoList  = new ArrayList<CartDTO>();
 		CartDTO cartDTO = null;
+		Set<Integer> tempCardId = new HashSet<Integer>();
 		for(Cart cart : cartList)
 		{
 			cartDTO = new CartDTO();
@@ -119,7 +120,10 @@ public class CartServiceImpl implements CartService{
 			    itemList.add(itemDTO);
 			}
 			cartDTO.setItems(itemList);
-			dtoList.add(cartDTO);
+			if(tempCardId.add((int) cart.getId()))
+			{
+				dtoList.add(cartDTO);
+			}
 		}
 		return dtoList;
 	}

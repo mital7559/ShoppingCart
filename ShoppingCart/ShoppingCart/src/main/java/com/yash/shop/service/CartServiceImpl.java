@@ -194,6 +194,29 @@ public class CartServiceImpl implements CartService{
 		cartDAO.removeItem(cartId, itemId);
 		
 	}
+	
+	@Override
+	public List<ItemDTO> getItemsFromCart(long cartId) {
+		
+		List<Item> itemList = new ArrayList<Item>();
+		List<ItemDTO> itemDTOList = new ArrayList<ItemDTO>();
+		
+		itemList = cartDAO.getItemsFromCart(cartId);
+		
+		for(Item item : itemList)
+		{
+			ItemDTO itemDTO = new ItemDTO();
+			itemDTO.setItem_id(item.getItem_id());
+			itemDTO.setCart_id(item.getCart_id());
+			itemDTO.setDescription(item.getDescription());
+			itemDTO.setCreatedAt(item.getCreatedAt());
+			itemDTO.setUpdatedAt(item.getUpdatedAt());
+			
+			itemDTOList.add(itemDTO);
+		}
+		
+		return itemDTOList;
+	}
 
 	
 

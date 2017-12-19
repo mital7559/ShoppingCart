@@ -24,4 +24,5 @@ public interface CartService {
 	public long addItemInCart(ItemDTO itemDTO);
 	public ItemDTO getAnItemFromCart(long cartId,long itemId);
 	public void removeItem(long cartId,long itemId);
+	public List<ItemDTO> getItemsFromCart(long cartId);
 }

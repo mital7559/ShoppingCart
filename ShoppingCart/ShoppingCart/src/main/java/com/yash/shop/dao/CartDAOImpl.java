@@ -130,6 +130,18 @@ public class CartDAOImpl implements CartDAO{
 		}
 		
 	}
+	
+	@SuppressWarnings("unchecked")
+	@Override
+	@Transactional
+	public List<Item> getItemsFromCart(long cartId) {
+		Session session = sessionFactory.getCurrentSession();
+		String hql = "from Item i where i.cart_id = :cartId ";
+		List<Item> itemList = session.createQuery(hql)
+		.setParameter("cartId", cartId)
+		.list();
+		return itemList;
+	}
 
 	
 

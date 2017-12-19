@@ -154,4 +154,16 @@ public class CartController {
 		return status;
 		
 	}
+	
+	/**
+	 * To Get All Items details in cart
+	 * 
+	 * @return
+	 */
+	@GetMapping(value="/shopping_carts/{cartId}/items",produces={MediaType.APPLICATION_JSON_VALUE})
+	public List<ItemDTO> getItemsFromCart(@PathVariable("cartId") long cartId){
+		
+		return cartService.getItemsFromCart(cartId);
+		
+	}
 }

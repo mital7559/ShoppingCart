@@ -48,9 +48,11 @@
 	
 
 	<bean id="cartDAO" class="com.yash.shop.dao.CartDAOImpl">
+		<property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
 	</bean>
 	
 	<bean id="cartService" class="com.yash.shop.service.CartServiceImpl">
+		<property name="cartDAO" ref="cartDAO" />
 	</bean>
 	
 	<tx:annotation-driven transaction-manager="transactionManager"/>

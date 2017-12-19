@@ -37,6 +37,7 @@ public class CartServiceImpl implements CartService{
 		cartDTO.setName(cart.getName());
 		cartDTO.setCreatedAt(cart.getCreatedAt());
 		cartDTO.setUpdatedAt(cart.getUpdatedAt());
+		cartDTO.setItems(null);
 		return cartDTO;
 		
 	}

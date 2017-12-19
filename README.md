@@ -18,4 +18,5 @@
 <li>POST    &nbsp;<b>shopping_carts/[cart_id]/items</b>&nbsp;                       Create a new shopping cart item
 <li>GET     &nbsp;<b>shopping_carts/[cart_id]/items/[item_id]</b>&nbsp;             Get a specific shopping cart item
 <li>DELETE  &nbsp;<b>shopping_carts/[cart_id]/items/[item_id]</b>&nbsp;             Delete a shopping cart item
+<li>GET     &nbsp;<b>shopping_carts/[cart_id]/items</b>&nbsp;                       Get All Items from Specific Cart
 </ul>

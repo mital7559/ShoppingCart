@@ -21,5 +21,6 @@ public interface CartDAO {
 	public long addItemInCart(Item item);
 	public Item getAnItemFromCart(long cartId, long itemId);
 	public void removeItem(long cartId, long itemId);
+	public List<Item> getItemsFromCart(long cartId);
 	
 }

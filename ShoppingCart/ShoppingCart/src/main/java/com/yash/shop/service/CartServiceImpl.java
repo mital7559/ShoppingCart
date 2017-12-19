@@ -20,8 +20,13 @@ import com.yash.shop.model.Item;
 @Service
 public class CartServiceImpl implements CartService{
 
-	@Autowired
+	
 	private CartDAO cartDAO;
+	
+	@Autowired
+	public void setCartDAO(CartDAO cartDAO) {
+		this.cartDAO = cartDAO;
+	}
 	
 	@Override
 	public CartDTO getCartById(long cartId) throws CartNotFoundException{

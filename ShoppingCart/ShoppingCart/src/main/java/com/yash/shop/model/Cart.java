@@ -1,6 +1,7 @@
 package com.yash.shop.model;
 
 import java.util.HashSet;
+
 import java.util.Set;
 
 import javax.persistence.Entity;
@@ -10,6 +11,9 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.annotations.Cascade;
+import org.hibernate.annotations.CascadeType;
 
 @Entity
 @Table(name="cart_details")
@@ -26,6 +30,7 @@ public class Cart {
 	private String updatedAt;
 	
 	@OneToMany(fetch = FetchType.EAGER ,mappedBy="cart")
+	@Cascade(CascadeType.DELETE)
 	private Set<Item> items = new HashSet<Item>(0);
 	
 	

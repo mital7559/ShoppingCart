@@ -5,10 +5,10 @@ import java.util.List;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.yash.shop.exception.CartNotFoundException;
 import com.yash.shop.model.Cart;
 import com.yash.shop.model.Item;
 
@@ -22,12 +22,25 @@ public class CartDAOImpl implements CartDAO{
 		  this.sessionFactory = sf;
 	}
 	
+	public CartDAOImpl(SessionFactory sessionFactory) {
+		this.sessionFactory = sessionFactory;
+	}
+	
+	public CartDAOImpl() {
+		
+	}
+	
+	
 	@Override
-	@Transactional
-	public Cart getCartById(long cartId) {
-		System.out.println("--DAO cartID---"+cartId);
+	@Transactional(rollbackFor = {CartNotFoundException.class})
+	public Cart getCartById(long cartId) throws CartNotFoundException{
 		Session session = sessionFactory.getCurrentSession();		
 		Cart cart = (Cart) session.get(Cart.class, new Long(cartId));
+		if(cart == null)
+		{
+			System.out.println("In exception");
+			throw new CartNotFoundException("Cart Not found for Id :"+cartId);
+		}
 		return cart;
 	}
 
@@ -38,9 +51,7 @@ public class CartDAOImpl implements CartDAO{
 		Session session = sessionFactory.getCurrentSession();
 		List<Cart> cartList = session.createQuery("from Cart").list();
 		//List<Cart> cartList = session.createQuery("from Cart c left join fetch c.items").list();
-		for(Cart c : cartList){
-			System.out.println("Cart List::"+c.getItems().toArray());
-		}
+		
 		return cartList;
 	}
 	
@@ -74,20 +85,22 @@ public class CartDAOImpl implements CartDAO{
 	}
 
 	@Override
-	@Transactional
-	public Cart updateCart(Cart cart) {
+	@Transactional(rollbackFor = {CartNotFoundException.class})
+	public Cart updateCart(Cart cart) throws CartNotFoundException{
 		Session session = sessionFactory.getCurrentSession();
 		session.update(cart);
 		return cart;
 	}
 
 	@Override
-	@Transactional
-	public void removeCart(long cartId) {
+	@Transactional(rollbackFor = {CartNotFoundException.class})
+	public void removeCart(long cartId) throws CartNotFoundException{
 		Session session = sessionFactory.getCurrentSession();
-		Cart c = (Cart) session.load(Cart.class, new Long(cartId));
+		Cart c = (Cart) session.get(Cart.class, new Long(cartId));
 		if(null != c){
 			session.delete(c);
+		}else{
+			throw new CartNotFoundException("Cart Not Found Exception for Id: "+cartId);
 		}
 		
 	}
@@ -105,10 +118,7 @@ public class CartDAOImpl implements CartDAO{
 	public Item getAnItemFromCart(long cartId, long itemId) {
 		Session session = sessionFactory.getCurrentSession();
 		String hql = "from Item i where i.item_id = :itemId and i.cart_id = :cartId ";
-		Item item = (Item) session.createQuery(hql)
-		.setParameter("itemId", itemId)
-		.setParameter("cartId", cartId)
-		.uniqueResult();
+		Item item = (Item) session.createQuery(hql).setParameter("itemId", itemId).setParameter("cartId", cartId).uniqueResult();
 		return item;
 	}
 
@@ -130,7 +140,7 @@ public class CartDAOImpl implements CartDAO{
 		}
 		
 	}
-	
+
 	@SuppressWarnings("unchecked")
 	@Override
 	@Transactional

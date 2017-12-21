@@ -3,6 +3,7 @@ package com.yash.shop.controller;
 import java.util.List;
 import java.util.Set;
 
+import org.hibernate.engine.spi.Status;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.DeleteMapping;
@@ -77,6 +78,7 @@ public class CartController {
 		return cartService.getCartById(cartId);
 	}
 	
+	
 	/**
 	 * Update cart details
 	 * 
@@ -87,9 +89,9 @@ public class CartController {
 	@PutMapping(value="/shopping_carts/{cartId}",consumes={MediaType.APPLICATION_JSON_VALUE},produces={MediaType.APPLICATION_JSON_VALUE})
 	public  CartDTO updateCart(@RequestBody CartDTO cartDTO,@PathVariable("cartId") long cartId) throws CartNotFoundException{
 		cartDTO.setId(cartId);
-		if(cartId>0){
-			cartDTO = cartService.updateCart(cartDTO);
-		}
+		
+		cartDTO = cartService.updateCart(cartDTO);
+		
 		return cartService.getCartById(cartId);
 	}
 	
@@ -108,7 +110,7 @@ public class CartController {
 	}
 	
 	@DeleteMapping(value="/shopping_carts/{cartId}",produces={MediaType.APPLICATION_JSON_VALUE})
-	public StatusDTO deleteCart(@PathVariable("cartId") long cartId){
+	public StatusDTO deleteCart(@PathVariable("cartId") long cartId) throws CartNotFoundException{
 		
 		cartService.removeCart(cartId);
 		StatusDTO status = new StatusDTO();

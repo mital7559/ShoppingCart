@@ -13,8 +13,8 @@ public interface CartService {
 	public long addCart(CartDTO cartDTO);
 	public List<CartDTO> getAllCarts();
 	public CartDTO getCartById(long cartId) throws CartNotFoundException;
-	public CartDTO updateCart(CartDTO cartDTO);
-	public void removeCart(long cartId);
+	public CartDTO updateCart(CartDTO cartDTO) throws CartNotFoundException;
+	public void removeCart(long cartId) throws CartNotFoundException;
 	
 	public List<CartDTO> getAllCartsWithItems();
 	

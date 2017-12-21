@@ -28,15 +28,20 @@ public class CartServiceImpl implements CartService{
 		this.cartDAO = cartDAO;
 	}
 	
+	public CartServiceImpl(CartDAO cartDAO) {
+		this.cartDAO = cartDAO;
+	}
+	
+	public CartServiceImpl() {
+		
+	}
+
 	@Override
 	public CartDTO getCartById(long cartId) throws CartNotFoundException{
 		
 		System.out.println("cart service called: "  + cartId);
 		Cart cart =  cartDAO.getCartById(cartId);
-		if(cart == null)
-		{
-			throw new CartNotFoundException("Cart Not Found Exception");
-		}
+		
 		CartDTO cartDTO = new CartDTO();
 		cartDTO.setId(cart.getId());
 		cartDTO.setName(cart.getName());
@@ -65,38 +70,6 @@ public class CartServiceImpl implements CartService{
 		return dtoList;
 	}
 	
-//	@Override
-//	public Set<CartItemDTO> getAllCartsWithItemsTest() {
-//		List<CartItemDTO> cartList = cartDAO.getAllCartsWithItemsTest();
-//		System.out.println("--Cart List--"+cartList.toString());
-//		Set<CartItemDTO> dtoList  = new HashSet<CartItemDTO>();
-//		
-//		CartItemDTO cartItemDTOTemp = null;
-//		for(CartItemDTO cartItemDTO : cartList)
-//		{
-//			cartItemDTOTemp = new CartItemDTO();
-//			cartItemDTOTemp.setCart_id(cartItemDTO.getCart_id());
-//			cartItemDTOTemp.setName(cartItemDTO.getName());
-//			cartItemDTOTemp.setCart_createdAt(cartItemDTO.getCart_createdAt());
-//			cartItemDTOTemp.setCart_updatedAt(cartItemDTO.getCart_updatedAt());
-//			
-//			Set<ItemDTO> itemSet = cartItemDTOTemp.getItems();
-//			Set<ItemDTO> itemList = new HashSet<ItemDTO>();
-//			
-//			for (ItemDTO item : itemSet) {
-//				ItemDTO itemDTO = new ItemDTO();
-//			    itemDTO.setItem_id(item.getItem_id());
-//			    itemDTO.setDescription(item.getDescription());
-//			    itemDTO.setCreatedAt(item.getCreatedAt());
-//			    itemDTO.setUpdatedAt(item.getUpdatedAt());
-//			    itemDTO.setCart_id(item.getCart_id());
-//			    itemList.add(itemDTO);
-//			}
-//			cartItemDTOTemp.setItems(itemList);
-//			dtoList.add(cartItemDTOTemp);
-//		}
-//		return dtoList;
-//	}
 	
 	@Override
 	public List<CartDTO> getAllCartsWithItems() {
@@ -104,9 +77,12 @@ public class CartServiceImpl implements CartService{
 		System.out.println("--Cart List--"+cartList.toString());
 		List<CartDTO> dtoList  = new ArrayList<CartDTO>();
 		CartDTO cartDTO = null;
+		
 		Set<Integer> tempCardId = new HashSet<Integer>();
 		for(Cart cart : cartList)
 		{
+
+			
 			cartDTO = new CartDTO();
 			cartDTO.setId(cart.getId());
 			cartDTO.setName(cart.getName());
@@ -126,6 +102,7 @@ public class CartServiceImpl implements CartService{
 			    itemList.add(itemDTO);
 			}
 			cartDTO.setItems(itemList);
+			
 			if(tempCardId.add((int) cart.getId()))
 			{
 				dtoList.add(cartDTO);
@@ -139,7 +116,6 @@ public class CartServiceImpl implements CartService{
 		
 		Cart cart = new Cart();
 		cart.setName(cartDTO.getName());
-		System.out.println("Current time:---"+new Timestamp(System.currentTimeMillis()).toString());
 		cart.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toString());
 		long cartId = cartDAO.addCart(cart);
 		
@@ -147,7 +123,7 @@ public class CartServiceImpl implements CartService{
 	}
 
 	@Override
-	public CartDTO updateCart(CartDTO cartDTO) {
+	public CartDTO updateCart(CartDTO cartDTO) throws CartNotFoundException{
 		Cart cart = new Cart();
 		cart.setId(cartDTO.getId());
 		cart.setName(cartDTO.getName());
@@ -159,7 +135,7 @@ public class CartServiceImpl implements CartService{
 	}
 
 	@Override
-	public void removeCart(long cartId) {
+	public void removeCart(long cartId) throws CartNotFoundException{
 		cartDAO.removeCart(cartId);
 		
 	}
@@ -194,7 +170,7 @@ public class CartServiceImpl implements CartService{
 		cartDAO.removeItem(cartId, itemId);
 		
 	}
-	
+
 	@Override
 	public List<ItemDTO> getItemsFromCart(long cartId) {
 		

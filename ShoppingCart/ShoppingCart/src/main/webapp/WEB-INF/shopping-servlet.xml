@@ -51,8 +51,20 @@
 		<property name="sessionFactory" ref="hibernate5AnnotatedSessionFactory" />
 	</bean>
 	
+	<bean id="jdbcTemplate" class="org.springframework.jdbc.core.JdbcTemplate">  
+		<property name="dataSource" ref="dataSource" /> 
+	</bean>
+	
+	<bean id="cartDAOJdbc" class="com.yash.shop.dao.CartDaoJdbcImpl">
+		<property name="jdbcTemplate" ref="jdbcTemplate" />
+	</bean>  
+	
 	<bean id="cartService" class="com.yash.shop.service.CartServiceImpl">
 		<property name="cartDAO" ref="cartDAO" />
+		<property name="cartDaoJdbc" ref="cartDAOJdbc" />
+		<property name="connection">  
+			<value>jdbc</value>
+		</property>
 	</bean>
 	
 	<tx:annotation-driven transaction-manager="transactionManager"/>

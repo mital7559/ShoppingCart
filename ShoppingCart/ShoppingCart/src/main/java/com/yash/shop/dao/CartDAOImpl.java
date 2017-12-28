@@ -15,9 +15,10 @@ import com.yash.shop.model.Item;
 @Repository
 public class CartDAOImpl implements CartDAO{
 
-	@Autowired
+	
 	private SessionFactory sessionFactory;
 	
+	@Autowired
 	public void setSessionFactory(SessionFactory sf) {
 		  this.sessionFactory = sf;
 	}

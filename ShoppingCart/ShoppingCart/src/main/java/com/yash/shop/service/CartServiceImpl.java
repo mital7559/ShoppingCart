@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import com.yash.shop.dao.CartDAO;
+import com.yash.shop.dao.CartDaoJdbcImpl;
 import com.yash.shop.dto.CartDTO;
 import com.yash.shop.dto.CartItemDTO;
 import com.yash.shop.dto.ItemDTO;
@@ -23,13 +24,31 @@ public class CartServiceImpl implements CartService{
 	
 	private CartDAO cartDAO;
 	
+	private CartDaoJdbcImpl cartDaoJdbc;
+	
+	private String connection;
+	
 	@Autowired
 	public void setCartDAO(CartDAO cartDAO) {
 		this.cartDAO = cartDAO;
 	}
 	
-	public CartServiceImpl(CartDAO cartDAO) {
+	@Autowired
+	public void setCartDaoJdbc(CartDaoJdbcImpl cartDaoJdbc) {
+		this.cartDaoJdbc = cartDaoJdbc;
+	}
+	
+	public void setConnection(String connection) {
+		this.connection = connection;
+	}
+	
+	public String getConnection() {
+		return connection;
+	}
+
+	public CartServiceImpl(CartDAO cartDAO,CartDaoJdbcImpl cartDaoJdbcImpl) {
 		this.cartDAO = cartDAO;
+		this.cartDaoJdbc = cartDaoJdbcImpl;
 	}
 	
 	public CartServiceImpl() {
@@ -40,8 +59,17 @@ public class CartServiceImpl implements CartService{
 	public CartDTO getCartById(long cartId) throws CartNotFoundException{
 		
 		System.out.println("cart service called: "  + cartId);
-		Cart cart =  cartDAO.getCartById(cartId);
+		Cart cart;
 		
+		if(getConnection().equalsIgnoreCase("hibernate"))
+		{
+			cart =  cartDAO.getCartById(cartId);
+		}
+		else
+		{
+			System.out.println("IN JDBC Service");
+			cart = cartDaoJdbc.getCartById(cartId);
+		}
 		CartDTO cartDTO = new CartDTO();
 		cartDTO.setId(cart.getId());
 		cartDTO.setName(cart.getName());
@@ -54,7 +82,15 @@ public class CartServiceImpl implements CartService{
 
 	@Override
 	public List<CartDTO> getAllCarts() {
-		List<Cart> cartList = cartDAO.getAllCarts();
+		
+		List<Cart> cartList;
+		
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			cartList = cartDAO.getAllCarts();
+		}else{
+			cartList = cartDaoJdbc.getAllCarts();
+		}
+		
 		List<CartDTO> dtoList  = new ArrayList<CartDTO>();
 		
 		for(Cart cart : cartList)
@@ -117,8 +153,15 @@ public class CartServiceImpl implements CartService{
 		Cart cart = new Cart();
 		cart.setName(cartDTO.getName());
 		cart.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toString());
-		long cartId = cartDAO.addCart(cart);
 		
+		long cartId;
+		if(getConnection().equalsIgnoreCase("hibernate")){
+		
+			cartId = cartDAO.addCart(cart);
+		}
+		else{
+			cartId = cartDaoJdbc.addCart(cart);
+		}
 		return cartId;
 	}
 
@@ -128,7 +171,13 @@ public class CartServiceImpl implements CartService{
 		cart.setId(cartDTO.getId());
 		cart.setName(cartDTO.getName());
 		cart.setUpdatedAt(new Timestamp(System.currentTimeMillis()).toString());
-		cart = cartDAO.updateCart(cart);
+		
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			cart = cartDAO.updateCart(cart);
+		}
+		else{
+			cart = cartDaoJdbc.updateCart(cart);
+		}
 		
 		return cartDTO;
 		
@@ -136,8 +185,12 @@ public class CartServiceImpl implements CartService{
 
 	@Override
 	public void removeCart(long cartId) throws CartNotFoundException{
-		cartDAO.removeCart(cartId);
-		
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			cartDAO.removeCart(cartId);
+		}
+		else{
+			cartDaoJdbc.removeCart(cartId);
+		}
 	}
 
 	@Override
@@ -145,16 +198,27 @@ public class CartServiceImpl implements CartService{
 		Item item = new Item();
 		item.setDescription(itemDTO.getDescription());
 		item.setCreatedAt(new Timestamp(System.currentTimeMillis()).toString());
-		//item.setCart(itemDTO.getCart());
 		item.setCart_id(itemDTO.getCart_id());
-		long itemId = cartDAO.addItemInCart(item);
 		
+		long itemId;
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			itemId = cartDAO.addItemInCart(item);
+		}
+		else{
+			itemId = cartDaoJdbc.addItemInCart(item);
+		}
 		return itemId;
 	}
 
 	@Override
 	public ItemDTO getAnItemFromCart(long cartId, long itemId) {
-		Item item = cartDAO.getAnItemFromCart(cartId, itemId);
+		Item item;
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			item = cartDAO.getAnItemFromCart(cartId, itemId);
+		}
+		else{
+			item = cartDaoJdbc.getAnItemFromCart(cartId, itemId);
+		}
 		ItemDTO itemDTO = new ItemDTO();
 		itemDTO.setItem_id(item.getItem_id());
 		itemDTO.setDescription(item.getDescription());
@@ -167,7 +231,12 @@ public class CartServiceImpl implements CartService{
 
 	@Override
 	public void removeItem(long cartId, long itemId) {
-		cartDAO.removeItem(cartId, itemId);
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			cartDAO.removeItem(cartId, itemId);
+		}
+		else{
+			cartDaoJdbc.removeItem(cartId,itemId);
+		}
 		
 	}
 
@@ -177,7 +246,11 @@ public class CartServiceImpl implements CartService{
 		List<Item> itemList = new ArrayList<Item>();
 		List<ItemDTO> itemDTOList = new ArrayList<ItemDTO>();
 		
-		itemList = cartDAO.getItemsFromCart(cartId);
+		if(getConnection().equalsIgnoreCase("hibernate")){
+			itemList = cartDAO.getItemsFromCart(cartId);
+		}else{
+			itemList = cartDaoJdbc.getItemsFromCart(cartId);
+		}
 		
 		for(Item item : itemList)
 		{
